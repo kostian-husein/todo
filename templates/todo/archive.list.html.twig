@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+    <style>
+        .item {
+            width: 300px;
+            height: 150px;
+            background-color: lightgrey;
+            border: 1px solid gray;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .item .label {
+            padding: 15px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .item .description {
+            padding: 15px;
+        }
+
+        .buttonLink {
+            margin-bottom: 10px;
+        }
+
+        .buttonLink input {
+            width: auto;
+            height: 50px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        .createBtn {
+            background-color: lightgreen;
+        }
+        .archiveBtn {
+            background-color: lightyellow;
+        }
+
+        .listBtn {
+            background-color: lightgreen;
+        }
+
+        .deleteBtn {
+            background-color: lightcoral;
+        }
+    </style>
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+        <h2>Archive Todo list:</h2>
+
+
+        <form class="buttonLink" method="GET" action="/todo/list">
+            <input class="listBtn" type="submit" value="Back to Todo list">
+        </form>
+
+        <form class="buttonLink" method="GET" action="/todo/deleted-list">
+            <input class="deleteBtn" type="submit" value="Go to deleted reminds">
+        </form>
+
+        {% for item in items %}
+
+                <div class="item">
+                <a style="float: right; padding: 10px" href="/todo/delete/{{ item.id }}">X</a>
+                <a style="float: left; padding: 10px" href="/todo/activate/{{ item.id }}">Restore</a>
+
+
+                <p class="label">{{ item.nameReminder }}</p>
+                <p class="description">{{ item.textReminder }}</p>
+                </div>
+
+        {% endfor %}
+    </div>
+
+    </body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+        <h2>Add form:</h2>
+
+        <a href="/users/list"> <- Back to users list</a>
+        <form action="/users/create" method="post">
+            <div>
+                <label for="login">Login</label><br/>
+                <input id="login" name="login" type="text" value="" placeholder="Login">
+            </div>
+            <br/>
+
+            <div>
+                <label for="firstName">First Name</label><br/>
+                <input id="firstName" name="firstName" type="text" value="" placeholder="First Name">
+            </div>
+            <br/>
+
+            <div>
+                <label for="lastName">Last name</label><br/>
+                <input id="lastName" name="lastName" type="text" value="" placeholder="Last Name">
+            </div>
+            <br/>
+
+            <div>
+                <label for="password">Password</label><br/>
+                <input id="password" name="password" type="text" value="" placeholder="Password">
+            </div>
+            <br/>
+
+            <div>
+                <label for="email">Email</label><br/>
+                <input id="email" name="email" type="text" value="" placeholder="Email">
+            </div>
+            <br/>
+
+            <div>
+                <label for="phone">Phone</label><br/>
+                <input id="phone" name="phone" type="text" value="" placeholder="Phone">
+            </div>
+            <div>
+                <label for="phone">Roles</label><br/>
+                <input id="roles" name="roles" type="text" value="" placeholder="roles">
+            </div>
+            <br/>
+
+
+            <button type="submit">Cоздать</button>
+        </form>
+    </div>
+
+    </body>
+</html>

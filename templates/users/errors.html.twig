@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+        <h2>Errors Add form:</h2>
+
+        <a href="/todo/users"> <- Back to users list</a>
+        <form action="/users/create" method="post">
+            <div>
+                <label for="login">Login</label><br/>
+                <input id="login" name="login" type="text" value="{{ errors.fields.login }}" placeholder="Login">
+                {% if errors.login is defined %}
+                    <p>{{ errors.login }}</p>
+                {% endif %}
+            </div>
+            <br/>
+
+            <div>
+                <label for="firstName">First Name</label><br/>
+                <input id="firstName" name="firstName" type="text" value="{{ errors.fields.firstName }}" placeholder="First Name">
+                {% if errors.firstName is defined %}
+                    <p>{{ errors.firstName }}</p>
+                {% endif %}
+            </div>
+            <br/>
+
+            <div>
+                <label for="lastName">Last name</label><br/>
+                <input id="lastName" name="lastName" type="text" value="{{ errors.fields.lastName }}" placeholder="Last Name">
+                {% if errors.lastName is defined %}
+                    <p>{{ errors.lastName }}</p>
+                {% endif %}
+            </div>
+            <br/>
+
+            <div>
+                <label for="password">Password</label><br/>
+                <input id="password" name="password" type="text" value="" placeholder="Password">
+                {% if errors.password is defined %}
+                    <p>{{ errors.password }}</p>
+                {% endif %}
+            </div>
+            <br/>
+
+            <div>
+                <label for="email">Email</label><br/>
+                <input id="email" name="email" type="text" value="{{ errors.fields.email }}" placeholder="Email">
+                {% if errors.email is defined %}
+                    <p>{{ errors.email }}</p>
+                {% endif %}
+
+            </div>
+            <br/>
+
+            <div>
+                <label for="phone">Phone</label><br/>
+                <input id="phone" name="phone" type="text" value="{{ errors.fields.phone }}" placeholder="Phone">
+                {% if errors.phone is defined %}
+                    <p>{{ errors.phone }}</p>
+                {% endif %}
+            </div>
+            <br/>
+
+
+            <button type="submit">Cоздать</button>
+        </form>
+    </div>
+
+    </body>
+</html>

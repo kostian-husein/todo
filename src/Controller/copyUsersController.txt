@@ -1,0 +1,149 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kostyanhuseyn
+ * Date: 22.12.21
+ * Time: 17:13
+ */
+
+namespace App\Controller;
+
+use App\Model\UsersModel;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+
+/**
+ * Class UserController
+ * @package App\Controller
+ */
+
+// КОПИЯ ПАБОЧЕГО КОНТРЛЛЕРА
+class UsersTodoController extends AbstractController
+{
+    /**
+     * @var UsersModel
+     */
+    private $model;
+
+    /**
+     * ToDoController constructor.
+     * @param UsersModel $model
+     */
+    public function __construct(UsersModel $model)
+    {
+        $this->model = $model;
+    }
+
+    /**
+     * @Route("/todo/users", name="users")
+     * @return Response
+     */
+    public function getUsersList(): Response
+    {
+        return $this->render('todo/users/users-list.html.twig', ['users' => $this->model->getUsersList()]);
+    }
+
+    /**
+     * @Route("/todo/archive-users-list", name="archive_users")
+     * @return Response
+     */
+    public function getArchiveUsersList(): Response
+    {
+        return $this->render('todo/users/archive-users-list.html.twig', ['users' => $this->model->getArchiveUsersList()]);
+    }
+
+    /**
+     * @Route("/todo/deleted-users-list", name="deleted_users")
+     * @return Response
+     */
+    public function getDeletedUsersList(): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+        return $this->render('todo/users/deleted-users-list.html.twig', ['users' => $this->model->getDeletedUsersList()]);
+    }
+
+    /**
+     * @param Request $request
+     * @return Response
+     * @Route("/todo/create-user", name="create-user")
+     */
+    public function createUser(Request $request): Response
+    {
+        if ($request->isMethod('POST')) {
+            $createResponse = $this->model->createUser($request);
+
+            if($createResponse){
+                return $this->render('todo/users/errors-create-user.html.twig', [
+                    'errors' => $createResponse
+                ]);
+            }
+
+            return $this->redirectToRoute('users');
+        } else {
+            return $this->render('todo/users/create-user.html.twig');
+        }
+    }
+
+    /**
+     * @return Response
+     * @param Request $request
+     * @param int $id
+     * @Route("/todo/edit-user/{id}", name="edit_user")
+     *
+     */
+    public function editUser(Request $request, int $id): Response
+    {
+        $this->denyAccessUnlessGranted('ROLE_ADMIN');
+
+        if ($request->isMethod('POST')) {
+            $this->model->editUser($request, $id);
+            return $this->redirectToRoute('users');
+        } else {
+            return $this->render('todo/users/edit-user.html.twig', ['user' => $this->model->getUser($id)]);
+        }
+    }
+
+    /**
+     * @param $id
+     * @return Response
+     * @Route("/todo/remove-user/{id}", name="remove_user")
+     */
+    public function removeUser($id): Response
+    {
+        $this->model->removeUser($id);
+        return $this->redirectToRoute('users');
+    }
+
+    /**
+     * @param $id
+     * @return Response
+     * @Route ("/todo/delete-user/{id}", name="delete_user")
+     */
+    public function deleteUser($id): Response
+    {
+        $this->model->deleteUser($id);
+        return $this->redirectToRoute('archive_users');
+    }
+
+    /**
+     * @Route("/todo/restore-user/{id}", name="restore_user")
+     * @param int $id
+     * @return Response
+     */
+    public function restoreUser(int $id): Response
+    {
+        $data = $this->model->restoreUser($id);
+
+        if ($data == 0) {
+            return $this->redirectToRoute('archive_users');
+        } elseif ($data == 1) {
+            return $this->redirectToRoute('deleted_users');
+        }
+    }
+
+
+
+}

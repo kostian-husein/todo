@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Todo{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+    <style>
+        .item {
+            width: 300px;
+            height: 150px;
+            background-color: lightgrey;
+            border: 1px solid gray;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .item .label {
+            padding: 15px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .item .description {
+            padding-left: 15px;
+        }
+
+        .buttonLink {
+            margin-bottom: 10px;
+        }
+
+        .buttonLink input {
+            width: auto;
+            height: 50px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        .createBtn {
+            background-color: lightgreen;
+        }
+        .archiveBtn {
+            background-color: lightyellow;
+        }
+        .authorization {
+            float:left;
+            margin-right:5px;
+        }
+        .authorization input {
+            width: auto;
+            height: 50px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+
+        a.btn {
+            border: 1px solid gray;
+            border-radius: 4px;
+            padding: 10px;
+            background: lightgrey;
+            text-decoration: none;
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        a.btn.active {
+            background: lightgreen;
+        }
+
+        a.btn.archive {
+            background: lightyellow;
+        }
+
+        a.btn.delete {
+            background: lightcoral;
+        }
+        a.btn.home {
+            background: lightgrey;
+            margin-left: 30px;
+        }
+
+        .buttonsContainer {
+            padding-bottom: 25px;
+        }
+
+        .sort {
+            width: max-content;
+            padding-bottom: 15px;
+
+        }
+
+    </style>
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+
+        <div>
+            <div>
+                {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+                    <p>Hello {{ app.user.login }} your role: {{ app.user.roles|json_encode() }} your id: {{ app.user.userId }}</p>
+                {% endif %}
+            </div>
+
+            <div>
+            <a class="authorization btn login" href="/login">Login</a>
+            <a class="authorization btn logout" href="/logout">Logout</a>
+            <a class="authorization btn home" href="/">Home</a>
+            <a class="authorization btn home" href="/todo/download">Download Todo Xls</a>
+            </div>
+
+            <div class="sort">Cортировать по количеству дней</div>
+                {% if listType == 'active' %}
+                    <a class="btn archive" href="/todo/list?isActive=1&isDeleted=0&sortDays=7">7 дней</a>
+                    <a class="btn archive" href="/todo/list?isActive=1&isDeleted=0">Показать все</a>
+                {% endif %}
+
+                {% if listType == 'archive' %}
+                    <a class="btn archive" href="/todo/list?isActive=0&isDeleted=0&sortDays=7">7 дней</a>
+                    <a class="btn archive" href="/todo/list?isActive=0&isDeleted=0">Показать все</a>
+                {% endif %}
+
+                {% if listType == 'deleted' %}
+                    <a class="btn archive" href="/todo/list?isActive=0&isDeleted=1&sortDays=7">7 дней</a>
+                    <a class="btn archive" href="/todo/list?isActive=0&isDeleted=1">Показать все</a>
+                {% endif %}
+        </div>
+
+        {% if listType == 'active' %}
+        <h2>Todo list:</h2>
+        {% endif %}
+        {% if listType == 'archive' %}
+            <h2>Archive list:</h2>
+        {% endif %}
+        {% if listType == 'deleted' %}
+            <h2>Deleted list:</h2>
+        {% endif %}
+
+        <div class="buttonsContainer">
+        {% if listType == 'active' %}
+        <a class="btn archive" href="/todo/list?isActive=0&isDeleted=0">Archived reminders</a>
+        <a class="btn archive" href="/todo/create">Add ToDo</a>
+        {% endif %}
+
+        {% if listType == 'archive' %}
+        <a class="btn active" href="/todo/list">Active reminders</a>
+        <a class="btn delete" href="/todo/list?isActive=0&isDeleted=1">Deleted reminders</a>
+        {% endif %}
+
+        {% if listType == 'deleted' %}
+            <a class="btn active" href="/todo/list">Active reminders</a>
+            <a class="btn archive" href="/todo/list?isActive=0&isDeleted=0">Archived reminders</a>
+        {% endif %}
+
+        </div>
+
+        {% for item in items %}
+
+
+                <div class="item">
+
+                {% if listType == 'active' %}
+                    <a style="float: right; padding: 10px" href="/todo/archive/{{ item.id }}">X</a>
+                    <a style="float: right; padding: 10px" href="/todo/edit/{{ item.id }}">E</a>
+                    <a style="float: left; padding: 10px" href="/todo/clone/{{ item.id }}">Clone</a>
+                {% endif %}
+                {% if listType == 'archive' %}
+                    <a style="float: right; padding: 10px" href="/todo/delete/{{ item.id }}">X</a>
+                    <a style="float: right; padding: 10px" href="/todo/activate/{{ item.id }}">A</a>
+                {% endif %}
+                {% if listType == 'deleted' %}
+                    <a style="float: right; padding: 10px" href="/todo/restore/{{ item.id }}">X</a>
+                {% endif %}
+
+
+                <p class="label">{{ item.nameReminder }}</p>
+                <p class="description">{{ item.textReminder }}:Id={{ item.id }}</p>
+                <p class="description">{{ item.createdAt.date|date('Y-m-d') }} {{ item.user.firstName }}</p>
+                </div>
+
+        {% endfor %}
+
+
+
+        <div>
+            {% for i in range(1, sumPage) %}
+                <a href="/todo/list?isActive=1&isDeleted=0&numPage={{ i }}{% if sortDay %}&sortDays=7{% endif %}">{{ i }}, </a>
+            {% endfor %}
+        </div>
+
+    </div>
+
+
+
+
+    </body>
+</html>

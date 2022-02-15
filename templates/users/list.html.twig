@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Users{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+    <style>
+        .item {
+            width: 300px;
+            height: auto;
+            background-color: lightgrey;
+            border: 1px solid gray;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+
+        .item .label {
+            padding: 15px;
+            font-weight: 600;
+            font-size: 18px;
+        }
+
+        .item .description {
+            padding: 15px;
+        }
+
+        .buttonLink {
+            margin-bottom: 10px;
+        }
+
+        .buttonLink input {
+            width: auto;
+            height: 50px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        .createBtn {
+            background-color: lightgreen;
+        }
+        .archiveBtn {
+            background-color: lightyellow;
+        }
+        .authorization {
+            float:left;
+            margin-right:5px;
+        }
+        .authorization input {
+            width: auto;
+            height: 50px;
+            font-size: 17px;
+            cursor: pointer;
+        }
+        a.btn {
+            border: 1px solid gray;
+            border-radius: 4px;
+            padding: 10px;
+            background: lightgrey;
+            text-decoration: none;
+            color: black;
+            margin-bottom: 10px;
+        }
+
+        a.btn.active {
+            background: lightgreen;
+        }
+
+        a.btn.archive {
+            background: lightyellow;
+        }
+
+        a.btn.delete {
+            background: lightcoral;
+        }
+        a.btn.login {
+            background: lightgrey;
+        }
+        a.btn.logout {
+            background: lightgrey;
+        }
+        a.btn.home {
+            background: lightgrey;
+            margin-left: 30px;
+        }
+
+    </style>
+
+
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+        <div>
+            <a class="authorization btn login" href="/login">Login</a>
+            <a class="authorization btn logout" href="/logout">Logout</a>
+            <a class="authorization btn home" href="/">Home</a>
+
+        </div>
+
+        {% if is_granted('IS_AUTHENTICATED_FULLY') %}
+            <p>Hello {{ app.user.login }} your role: {{ app.user.roles|json_encode() }}</p>
+        {% endif %}
+        {% if listType == 'active' %}
+            <h2>Users list:</h2>
+        {% endif %}
+        {% if listType == 'archive' %}
+            <h2>Archive users list:</h2>
+        {% endif %}
+        {% if listType == 'deleted' %}
+            <h2>Deleted users list:</h2>
+        {% endif %}
+
+        {% if listType == 'active' %}
+            <a class="btn archive" href="/users/list?isActive=0&isDeleted=0">Archived users</a>
+            <a class="btn archive" href="/users/create">Create user</a>
+
+        {% endif %}
+
+        {% if listType == 'archive' %}
+            <a class="btn active" href="/users/list">Active reminders</a>
+            <a class="btn delete" href="/users/list?isActive=0&isDeleted=1">Deleted users</a>
+        {% endif %}
+
+        {% if listType == 'deleted' %}
+            <a class="btn active" href="/users/list">Active reminders</a>
+            <a class="btn archive" href="/users/list?isActive=0&isDeleted=0">Archived users</a>
+        {% endif %}
+
+
+
+        {% for user in items %}
+
+            <div class="item">
+                {% if listType == 'active' %}
+                    <a style="float: right; padding: 10px" href="/users/archive/{{ user.userId }}">X</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a style="float: right; padding: 10px" href="/users/edit/{{ user.userId }}">E</a>
+                    {% endif %}
+                {% endif %}
+                {% if listType == 'archive' %}
+                    <a style="float: right; padding: 10px" href="/users/delete/{{ user.userId }}">X</a>
+                    <a style="float: right; padding: 10px" href="/users/activate/{{ user.userId }}">A</a>
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a style="float: right; padding: 10px" href="/users/edit/{{ user.userId }}">E</a>
+                    {% endif %}
+                {% endif %}
+                {% if listType == 'deleted' %}
+                    {% if is_granted('ROLE_ADMIN') %}
+                        <a style="float: right; padding: 10px" href="/users/edit/{{ user.userId }}">E</a>
+                    {% endif %}
+                    <a style="float: right; padding: 10px" href="/users/restore/{{ user.userId }}">R</a>
+                {% endif %}
+
+
+                <p class="label">{{ user.login }}</p>
+                <p class="description">{{ user.firstName }} {{ user.lastName }}</p>
+                <p class="description">{{ user.createdAt.date|date('Y-m-d') }}</p>
+
+                {% for todo in user.getTodos() %}
+                    <p class="description">TodoId:{{ todo.id }}</p>
+                {% endfor %}
+
+                {% for activity in user.activityUser %}
+                    <p class="description">ActivityId:{{ dump(activity) }}</p>
+                {% endfor %}
+            </div>
+
+        {% endfor %}
+
+     </div>
+    </body>
+</html>

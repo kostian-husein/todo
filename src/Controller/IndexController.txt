@@ -1,0 +1,140 @@
+<?php
+/**
+ * Created by PhpStorm.
+ * User: kostyanhuseyn
+ * Date: 12.12.21
+ * Time: 22:28
+ */
+
+namespace App\Controller;
+
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use App\Ent\Todo;
+
+/**
+ * Class IndexController
+ * @package Application\Controller
+ */
+class IndexController extends AbstractController
+{
+    /**
+     * @var EntityManagerInterface
+     */
+    private $entityManager;
+
+    /**
+     * IndexController constructor.
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
+
+    /**
+     * @Route("/", name="index")
+     * @return Response
+     */
+    public function index(): Response
+    {
+
+        $rep = $this->entityManager->getRepository(Todo::class)->findBy(['isActive' => '0']);
+
+        //$entity = $this->entityManager->getRepository(Todo::class)->findOneBy(['id' => 1]);
+        //$entity->setNameReminder("Changed first reminder");
+        //$this->entityManager->persist($entity);
+        //$this->entityManager->flush();
+        //var_dump($products); exit;
+
+//        $this->deleteRemind(41);
+        //return $this->render('base.html.twig', ['reminds' => $rep]);
+        return $this->findRemind();
+
+    }
+
+    public function deleteRemind($id) {
+
+        $remind = $this->entityManager->getRepository(Todo::class)->findOneBy(['id' => $id]);
+
+        if (null === $remind) {
+            throw new \RuntimeException(__METHOD__ . ' Remind not found');
+        }
+
+        $this->entityManager->remove($remind);
+        $this->entityManager->flush();
+    }
+
+    /**
+     *
+     */
+    public function addDataInTable() {
+
+        $data = array();
+
+      for ($i = 0; $i < 7; $i++) {
+           $data[$i] = array (
+               'is_active' => 1,
+               'name_reminder' => $i.'4 name',
+               'text_reminder' => $i.'5 text',
+               'date_start' => '2021-12-'.rand(1, 30).' 16:58:23',
+               'date_end' => '2021-12-'.rand(1, 30).' 16:58:23',
+               'is_deleted' => rand(0, 1)
+           );
+      };
+
+      $this->setRemind($data);
+   }
+
+   /**
+    * @param $arrRemind
+    */
+    public function setRemind($arrRemind)
+    {
+
+        foreach ($arrRemind as $item) {
+
+            $bd = $this->getDoctrine()->getManager();
+            $remind = new Todo();
+            $remind->setIsActive($item['is_active']);
+            $remind->setNameReminder($item['name_reminder']);
+            $remind->setTextReminder($item['text_reminder']);
+            $remind->setDateStart(new \DateTime($item['date_start']));
+            $remind->setDateEnd(new \DateTime($item['date_end']));
+            $remind->setIsDeleted($item['is_deleted']);
+            $bd->persist($remind);
+            $bd->flush();
+        }
+
+    }
+
+    public function findRemind()
+    {
+        /** @var todo $entity */
+
+        $repository = $this->getDoctrine()->getRepository(Todo::class);
+        $reminds = $repository->findBy(
+            ['isActive' => '0']
+        );
+
+
+        return $this->render('base.html.twig', ['reminds' => $reminds]);
+    }
+
+    /**
+     * @param $id
+     * @param $data
+     */
+    public function editRemind($id, $data) {
+
+        $remind = $this->entityManager->getRepository(Todo::class)->findOneBy(['id' => $id]);
+        $remind->setIsActive();
+        $remind->setNameReminder();
+        $remind->setTextReminder();
+        $remind->setDateEnd();
+
+    }
+}

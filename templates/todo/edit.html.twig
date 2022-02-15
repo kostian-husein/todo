@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF-8">
+        <title>{% block title %}Welcome!{% endblock %}</title>
+        {# Run `composer require symfony/webpack-encore-bundle`
+           and uncomment the following Encore helpers to start using Symfony UX #}
+        {% block stylesheets %}
+            {#{{ encore_entry_link_tags('app') }}#}
+        {% endblock %}
+
+        {% block javascripts %}
+            {#{{ encore_entry_script_tags('app') }}#}
+        {% endblock %}
+    </head>
+    <body>
+    <div style="display: flex; justify-content: center; flex-direction: column; align-items: center">
+        <h2>Edit form:</h2>
+        <form action="/todo/edit/{{ item.id }}" method="post">
+            <div>
+                <label for="name">Name</label><br/>
+                <input id="name" name="nameReminder" type="text" value="{{ item.nameReminder }}" placeholder="Name">
+            </div>
+            <br/>
+
+            <div>
+                <label for="description">Description</label><br/>
+                <input id="description" name="textReminder" type="text" value="{{ item.textReminder }}" placeholder="description">
+            </div>
+            <br/>
+
+
+            <button type="submit">Изменить</button>
+        </form>
+    </div>
+
+    </body>
+</html>

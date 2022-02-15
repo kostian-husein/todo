@@ -1,0 +1,17 @@
+php composer.phar require blabla
+ /**
+Генерация сущностей на основе таблиц базы данных:
+
+php bin/console doctrine:mapping:import "Application\Entity" annotation --path=src/Ent
+
+Сгенерирует в директорию src/Ent
+**/
+
+
+/**
+php bin/console make:entity --regenerate "Application\Ent"
+**/
+
+/**
+ php bin/console cache:clear
+ **/
