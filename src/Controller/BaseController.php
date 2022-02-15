@@ -35,7 +35,7 @@ class BaseController extends AbstractController
     protected const CREATE_TEMPLATE = '';
     protected const EDIT_TEMPLATE = '';
     protected const REDIRECT_ROUTE = 'b';
-    protected const ERRORS_TEMPLATE = '';
+    protected const ERRORS_TEMPLATE = 'a';
 
     /**
      * AbstractController constructor.
